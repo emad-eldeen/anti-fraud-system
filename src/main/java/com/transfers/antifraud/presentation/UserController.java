@@ -26,6 +26,8 @@ public class UserController {
                     new HttpHeaders(), HttpStatus.CREATED);
         } catch (UserConflictException e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT);
+        } catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -45,4 +47,36 @@ public class UserController {
                 .map(UserDTO::new)
                 .collect(Collectors.toList());
     }
+
+    @PutMapping("/users/role")
+    public UserDTO changeUserRole(@RequestBody User user) {
+        try {
+            return new UserDTO(userService.changeUserRole(
+                    user.getUsername(), user.getRole()
+            ));
+        } catch (UserNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        } catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        } catch (UserConflictException e) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT);
+        }
+    }
+
+    @PutMapping("/users/access")
+    public Response changeUserLockStatus(@RequestBody User user) {
+        try {
+            userService.changeUserLockStatus(user);
+            return new Response("User %s %s!".formatted(
+                    user.getUsername(),
+                    user.getOperation() == Operation.LOCK ? "locked" : "unlocked"
+            ));
+        } catch (UserNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        } catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    record Response(String status) {}
 }

@@ -15,7 +15,7 @@ import jakarta.validation.constraints.NotEmpty;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    int id;
+    long id;
     @NotEmpty
     private String name;
     @NotEmpty
@@ -23,5 +23,9 @@ public class User {
     private String username;
     @NotEmpty
     private String password;
+    private Role role;
+    // locked by default until unlocked by an admin
+    private boolean locked = true;
+    private Operation operation = null;
 }
 

@@ -1,6 +1,7 @@
 package com.transfers.antifraud.businesslayer.user;
 
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
@@ -11,11 +12,13 @@ public class UserDetailsImpl implements UserDetails {
     private final String username;
     private final String password;
     private final List<GrantedAuthority> rolesAndAuthorities;
+    private final boolean locked;
 
     public UserDetailsImpl(User user) {
         username = user.getUsername();
         password = user.getPassword();
-        rolesAndAuthorities = new ArrayList<>(); // no roles for now
+        rolesAndAuthorities = List.of(new SimpleGrantedAuthority(user.getRole().name()));
+        locked = user.isLocked();
     }
 
     @Override
@@ -32,7 +35,6 @@ public class UserDetailsImpl implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return rolesAndAuthorities;
     }
-    // 4 remaining methods that just return true
     @Override
     public boolean isAccountNonExpired() {
         return true;
@@ -40,7 +42,7 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return !locked;
     }
 
     @Override
