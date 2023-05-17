@@ -22,6 +22,10 @@ public class WebSecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/users").hasAnyAuthority(Role.ADMINISTRATOR.name(), Role.SUPPORT.name())
                         .requestMatchers("/api/users/*").hasAnyAuthority(Role.ADMINISTRATOR.name())
                         .requestMatchers("/api/anti-fraud/transactions").hasAnyAuthority(Role.MERCHANT.name())
+                        .requestMatchers("/api/anti-fraud/suspicious-ips").hasAnyAuthority(Role.SUPPORT.name())
+                        .requestMatchers(HttpMethod.DELETE,"/api/anti-fraud/suspicious-ips/**").hasAnyAuthority(Role.SUPPORT.name())
+                        .requestMatchers("/api/anti-fraud/stolen-cards").hasAnyAuthority(Role.SUPPORT.name())
+                        .requestMatchers(HttpMethod.DELETE,"/api/anti-fraud/stolen-cards/**").hasAnyAuthority(Role.SUPPORT.name())
                         .anyRequest().authenticated() // for any other request, authentication is needed
                 )
                 .csrf().disable(); // for postman to work
