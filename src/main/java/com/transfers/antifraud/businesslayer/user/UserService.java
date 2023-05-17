@@ -1,10 +1,12 @@
 package com.transfers.antifraud.businesslayer.user;
 
+import com.transfers.antifraud.exceptions.BadRequestException;
+import com.transfers.antifraud.exceptions.ConflictException;
+import com.transfers.antifraud.exceptions.NotFoundException;
 import com.transfers.antifraud.persistence.UserRepository;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +23,7 @@ public class UserService {
 
     public User createUser(User user) {
         if (userExists(user.getUsername())) {
-            throw new UserConflictException("A user with the same username already exists");
+            throw new ConflictException("A user with the same username already exists");
         }
         // convert username to lower case
         user.setUsername(user.getUsername().toLowerCase());
@@ -37,7 +39,7 @@ public class UserService {
 
     public void deleteUser(String username) {
         userRepository.delete(userRepository.findByUsername(username)
-                .orElseThrow(UserNotFoundException::new));
+                .orElseThrow(() -> new NotFoundException("User was not found!")));
     }
 
     public List<User> listUsers() {
@@ -65,7 +67,7 @@ public class UserService {
 
     private boolean validateRole(Role role) {
         if (role == null) {
-            throw new IllegalArgumentException();
+            throw new BadRequestException("Invalid role");
         }
         if (listUsers().size() == 0) {
             // The first registered user should receive the ADMINISTRATOR role
@@ -79,16 +81,16 @@ public class UserService {
     public User changeUserRole(@NotNull String username, Role role) {
         // TODO check why @NotEmpty not working here
         if (username == null) {
-            throw new IllegalArgumentException();
+            throw new BadRequestException("Invalid username");
         }
         User dbUser = userRepository.findByUsername(username)
-                .orElseThrow(UserNotFoundException::new);
+                .orElseThrow(() -> new NotFoundException("User was not found!"));
         if (!validateRole(role)) {
-            throw new IllegalArgumentException("Invalid user role");
+            throw new BadRequestException("Invalid user role");
         } else {
             // in case the user already has this role
             if (dbUser.getRole() == role) {
-                throw new UserConflictException("User already has this role");
+                throw new ConflictException("User already has this role");
             }
             dbUser.setRole(role);
             userRepository.save(dbUser);
@@ -102,10 +104,10 @@ public class UserService {
         @NotEmpty
         Operation operation = user.getOperation();
         User dbUser = userRepository.findByUsername(username)
-                .orElseThrow(UserNotFoundException::new);
+                .orElseThrow(() -> new NotFoundException("User was not found!"));
         // for safety reasons, admin cant be blocked
         if (dbUser.getRole() == Role.ADMINISTRATOR) {
-            throw new IllegalArgumentException();
+            throw new BadRequestException("Invalid role");
         }
         switch (operation) {
             case LOCK -> dbUser.setLocked(true);

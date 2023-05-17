@@ -1,26 +1,20 @@
 package com.transfers.antifraud.presentation;
 
-import com.transfers.antifraud.businesslayer.Transaction;
-import com.transfers.antifraud.businesslayer.TransactionService;
+import com.transfers.antifraud.businesslayer.*;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/anti-fraud")
+@RequestMapping("/api")
 public class TransactionController {
+    @Autowired
+    TransactionService transactionService;
 
     @PostMapping("/transactions")
-    public Response transactionRequest(@RequestBody @Valid Transaction transaction) {
-        try {
-            return new Response(TransactionService.validateAmount(transaction).toString());
-        } catch (IllegalArgumentException e){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-        }
+    public TransactionService.ValidationResponse transactionRequest(
+            @RequestBody @Valid Transaction transaction) {
+        return transactionService.validateTransaction(transaction);
     }
 
     record Response(String result) {}
