@@ -14,18 +14,24 @@ TODO
   - All users, except for `ADMINISTRATOR`, should be locked when created.
   - Role model:
 ```
-|                                 | Anonymous | MERCHANT | ADMINISTRATOR | SUPPORT |
-|---------------------------------|-----------|----------|---------------|---------|
-| POST /api/auth/user             | -         | +        | +             | +       |
-| DELETE /api/auth/user           | -         | -        | +             | -       |
-| GET /api/auth/list              | -         | -        | +             | +       |
-| POST /api/antifraud/transaction | -         | +        | -             | -       |
-| PUT /api/auth/access            | -         | -        | +             | -       |
-| PUT /api/auth/role              | -         | -        | +             | -       |
+|                                                  | Anonymous | MERCHANT | ADMINISTRATOR | SUPPORT |
+|------------------------------------------------  |-----------|----------|---------------|---------|
+| POST /api/auth/user                              | -         | +        | +             | +       |
+| DELETE /api/auth/user                            | -         | -        | +             | -       |
+| GET /api/auth/list                               | -         | -        | +             | +       |
+| PUT /api/auth/access                             | -         | -        | +             | -       |
+| PUT /api/auth/role                               | -         | -        | +             | -       |
+| POST /api/anti-fraud/transaction                 | -         | +        | -             | -       |
+| POST, DELETE, GET api/anti-fraud/suspicious-ips  | -         | -        | -             | +       |
+| POST, DELETE, GET api/anti-fraud/stolen-cards    | -         | -        | -             | +       |
 ```
 - REST APIs for:
-  - Transactions:
-    - Transaction validation 
+  - Anti fraud:
+    - Transaction validation
+    - add/delete a stolen card
+    - list stolen cards
+    - add/delete suspicious IP
+    - list suspicious IPs
   - Users:
     - creating a user
     - deleting a user
