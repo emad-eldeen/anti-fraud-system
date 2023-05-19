@@ -12,7 +12,7 @@ public class TransactionController {
     TransactionService transactionService;
 
     @PostMapping("/transactions")
-    public TransactionService.ValidationResponse transactionRequest(
+    public TransactionService.AggregatedValidationResponse transactionRequest(
             @RequestBody @Valid Transaction transaction) {
         return transactionService.validateTransaction(transaction);
     }
