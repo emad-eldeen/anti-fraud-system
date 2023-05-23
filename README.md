@@ -1,5 +1,5 @@
 # Anti-fraud System
-TODO
+A system to validate credit cards' transactions. It supports authentication and authorization. Data is saved persistently in a database
 
 ## Technical Requirements
 - Validating transactions as per the following workflow:
